@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pruthvi Industries - Staff Attendance & Leave Management System</title>
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            background: #f8f9ff;
+            display: flex;
+            border-bottom: 2px solid #e1e5e9;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 1em;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #4facfe;
+            border-bottom: 3px solid #4facfe;
+        }
+
+        .nav-tab:hover {
+            background: #e8f3ff;
+            color: #4facfe;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .attendance-form, .staff-form, .search-section, .report-filters, .leave-form, .dashboard-section, .financial-summary {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .form-group select, .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+        }
+
+        .form-group select:focus, .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
+        }
+        
+        .form-group input[type="file"] {
+            border: none;
+            padding: 0;
+        }
+
+        .attendance-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .quick-filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            padding: 12px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            background: white;
+            color: #333;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .filter-btn:hover {
+            border-color: #4facfe;
+            background: #f0f8ff;
+        }
+
+        .filter-btn.active {
+            border-color: #4facfe;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .option-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #e1e5e9;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .option-link:hover {
+            border-color: #4facfe;
+            background: #f0f8ff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .option-link.selected {
+            border-color: #4facfe;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .option-link.present-selected {
+            border-color: #4CAF50;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .option-link.absent-selected {
+            border-color: #f44336;
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+        }
+        
+        .option-link.leave-selected {
+            border-color: #FFC107;
+            background: linear-gradient(135deg, #FFC107, #FFA000);
+            color: white;
+        }
+
+        .option-link.full-selected {
+            border-color: #4CAF50;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .option-link.half-selected {
+            border-color: #FF9800;
+            background: linear-gradient(135deg, #FF9800, #f57c00);
+            color: white;
+        }
+        
+        .option-link.sick-selected {
+            border-color: #FFC107;
+            background: linear-gradient(135deg, #FFC107, #FFA000);
+            color: white;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, #00BCD4, #0097A7);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #FF9800, #f57c00);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .staff-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .staff-item, .leave-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e1e5e9;
+            transition: all 0.3s ease;
+        }
+
+        .staff-item:hover, .leave-item:hover {
+            border-color: #4facfe;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .staff-item-header, .leave-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .leave-item-header h4 {
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .staff-name {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .staff-salary {
+            font-size: 1.1em;
+            color: #4facfe;
+            font-weight: 600;
+        }
+        
+        .leave-status {
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+        
+        .status-pending { background: #FFC107; color: white; }
+        .status-approved { background: #4CAF50; color: white; }
+        .status-rejected { background: #f44336; color: white; }
+
+        .staff-actions, .leave-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .weekly-summary, .report-summary, .dashboard-section, .financial-summary {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .summary-header {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .summary-header h2 {
+            color: #333;
+            font-size: 1.8em;
+        }
+
+        .staff-summary {
+            padding: 20px;
+        }
+
+        .staff-card {
+            background: #f8f9ff;
+            border: 1px solid #e1e5e9;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .staff-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .staff-card-name {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .daily-salary {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .attendance-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .day-card {
+            background: white;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .day-card.present {
+            border-color: #4CAF50;
+            background: #e8f5e8;
+            color: #2e7d2e;
+        }
+        
+        .day-card.leave {
+            border-color: #FFC107;
+            background: #fff8e1;
+            color: #e65100;
+        }
+
+        .day-card.half {
+            border-color: #FF9800;
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .day-card.absent {
+            border-color: #f44336;
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .day-card.weekend {
+            border-color: #9E9E9E;
+            background: #f5f5f5;
+            color: #616161;
+            font-style: italic;
+        }
+
+        .total-salary {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-top: 15px;
+        }
+
+        .financial-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .financial-summary h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .financial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .financial-card {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .financial-card h4 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .financial-card .amount {
+            font-size: 1.4em;
+            font-weight: 700;
+        }
+
+        .export-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .export-btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pdf-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .excel-btn {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .search-results {
+            margin-top: 20px;
+        }
+
+        .no-results {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .dashboard-card h3 {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .dashboard-card .value {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #4facfe;
+        }
+        
+        .dashboard-card.total-staff .value { color: #667eea; }
+        .dashboard-card.present-today .value { color: #4CAF50; }
+        .dashboard-card.absent-today .value { color: #f44336; }
+        .dashboard-card.leave-today .value { color: #FFC107; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e1e5e9;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .date-range-info {
+            background: #e8f3ff;
+            border: 2px solid #4facfe;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #1976d2;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .staff-selection-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .staff-selectable-card {
+            background: #f8f9ff;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            user-select: none;
+        }
+
+        .staff-selectable-card:hover {
+            border-color: #4facfe;
+            background: #e8f3ff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.1);
+        }
+
+        .staff-selectable-card.selected {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .attendance-options, .quick-filters {
+                grid-template-columns: 1fr;
+            }
+            .export-buttons {
+                grid-template-columns: 1fr;
+            }
+            .attendance-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+            .form-row, .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+            .financial-grid {
+                grid-template-columns: 1fr;
+            }
+            .staff-actions, .leave-actions {
+                flex-direction: column;
+            }
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Pruthvi Industries</h1>
+            <p>Staff Attendance & Leave Management System</p>
+        </div>
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="nav-tab" onclick="switchTab('attendance')">Mark Attendance</button>
+            <button class="nav-tab" onclick="switchTab('leave')">Leave Requests</button>
+            <button class="nav-tab" onclick="switchTab('manage')">Manage Staff</button>
+            <button class="nav-tab" onclick="switchTab('summary')">Weekly Summary</button>
+            <button class="nav-tab" onclick="switchTab('reports')">Reports</button>
+            <button class="nav-tab" onclick="switchTab('financial')">Financial Reports</button>
+        </div>
+
+        <div id="dashboard-tab" class="tab-content active">
+            <div class="dashboard-section">
+                <h2 style="margin-bottom: 20px; color: #333;">Today's Overview</h2>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card total-staff">
+                        <h3>Total Staff</h3>
+                        <div class="value" id="totalStaffCount">0</div>
+                    </div>
+                    <div class="dashboard-card present-today">
+                        <h3>Present Today</h3>
+                        <div class="value" id="presentTodayCount">0</div>
+                    </div>
+                    <div class="dashboard-card absent-today">
+                        <h3>Absent Today</h3>
+                        <div class="value" id="absentTodayCount">0</div>
+                    </div>
+                    <div class="dashboard-card leave-today">
+                        <h3>On Leave Today</h3>
+                        <div class="value" id="leaveTodayCount">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="attendance-tab" class="tab-content">
+            <div class="attendance-form">
+                <h2 style="margin-bottom: 20px; color: #333;">Mark Daily Attendance</h2>
+                <form id="attendanceForm">
+                    <div class="form-group">
+                        <label for="staffSelect">Select Staff Member:</label>
+                        <select id="staffSelect" required>
+                            <option value="">Choose Staff Member</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateInput">Date:</label>
+                        <input type="date" id="dateInput" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Attendance Status:</label>
+                        <div class="attendance-options">
+                            <a href="#" class="option-link" data-attendance="present" id="presentLink">
+                                Present (P)
+                            </a>
+                            <a href="#" class="option-link" data-attendance="absent" id="absentLink">
+                                Absent (A)
+                            </a>
+                            <a href="#" class="option-link" data-attendance="leave" id="leaveLink">
+                                Leave (L)
+                            </a>
+                        </div>
+                    </div>
+                    <div class="form-group" id="dayTypeGroup" style="display: none;">
+                        <label>Day Type:</label>
+                        <div class="attendance-options">
+                            <a href="#" class="option-link" data-daytype="full" id="fullDayLink">
+                                Full Day
+                            </a>
+                            <a href="#" class="option-link" data-daytype="half" id="halfDayLink">
+                                Half Day
+                            </a>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full" id="submitBtn" disabled>Mark Attendance</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="leave-tab" class="tab-content">
+            <div class="leave-form">
+                <h2 style="margin-bottom: 20px; color: #333;">Manage Leave Requests</h2>
+                <form id="addLeaveForm">
+                    <div class="form-group">
+                        <label for="leaveStaffSelect">Select Staff Member:</label>
+                        <select id="leaveStaffSelect" required>
+                            <option value="">Choose Staff Member</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="leaveStartDate">Start Date:</label>
+                            <input type="date" id="leaveStartDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="leaveEndDate">End Date:</label>
+                            <input type="date" id="leaveEndDate" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="leaveReason">Reason for Leave:</label>
+                        <textarea id="leaveReason" required placeholder="Enter reason for leave"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-full">Submit Leave Request</button>
+                </form>
+            </div>
+            <div class="leave-requests-section">
+                <h3 style="margin-bottom: 20px; color: #333;">Pending Leave Requests</h3>
+                <div id="leaveRequestList" class="staff-list">
+                </div>
+            </div>
+        </div>
+
+        <div id="manage-tab" class="tab-content">
+            <div class="staff-form">
+                <h2 style="margin-bottom: 20px; color: #333;">Add New Staff Member</h2>
+                <form id="addStaffForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="staffNameInput">Staff Name:</label>
+                            <input type="text" id="staffNameInput" required placeholder="Enter staff name">
+                        </div>
+                        <div class="form-group">
+                            <label for="staffSalaryInput">Daily Salary (Rs):</label>
+                            <input type="number" id="staffSalaryInput" required placeholder="Enter daily salary" min="1">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-full">Add Staff Member</button>
+                </form>
+            </div>
+            <div class="search-section">
+                <h2 style="margin-bottom: 20px; color: #333;">Search & Manage Staff</h2>
+                <div class="form-group">
+                    <input type="text" id="searchInput" placeholder="Search staff by name..." style="width: 100%;">
+                </div>
+                <div id="searchResults" class="search-results">
+                    <div class="staff-list" id="staffList">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="summary-tab" class="tab-content">
+            <div class="weekly-summary">
+                <div class="summary-header">
+                    <h2>Progressive Weekly Summary</h2>
+                    <p style="color: #666; font-size: 0.9em; margin-top: 5px;">(Past 7 days including today)</p>
+                </div>
+                <div id="weeklySummaryContent">
+                </div>
+            </div>
+        </div>
+
+        <div id="reports-tab" class="tab-content">
+            <div class="report-filters">
+                <h2 style="margin-bottom: 20px; color: #333;">Generate Custom Reports</h2>
+                <div class="form-group">
+                    <label for="reportStaffType">Select Staff for Report:</label>
+                    <div class="attendance-options">
+                        <a href="#" class="option-link selected" data-report-type="multiple" id="multipleStaffLink">
+                            Multiple Staff
+                        </a>
+                        <a href="#" class="option-link" data-report-type="single" id="singleStaffLink">
+                            Individual Staff
+                        </a>
+                    </div>
+                </div>
+                <div class="form-group" id="reportStaffSelectGroup" style="display: none;">
+                    <label for="reportStaffSelect">Choose Staff Member:</label>
+                    <select id="reportStaffSelect" class="form-control">
+                        <option value="all">All Staff</option>
+                    </select>
+                </div>
+                <div class="form-group" id="reportStaffMultiSelectGroup">
+                    <label>Select Staff Members:</label>
+                    <div class="staff-selection-list" id="reportStaffMultiSelect">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reportStartDate">Start Date:</label>
+                        <input type="date" id="reportStartDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reportEndDate">End Date:</label>
+                        <input type="date" id="reportEndDate" class="form-control" required>
+                    </div>
+                </div>
+                <div class="export-buttons">
+                    <button class="btn export-btn pdf-btn" id="exportPdfBtn" onclick="generatePdfReport()">Export as PDF</button>
+                    <button class="btn export-btn excel-btn" id="exportExcelBtn" onclick="generateExcelReport()">Export as Excel</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="financial-tab" class="tab-content">
+            <div class="financial-summary">
+                <h2 style="margin-bottom: 20px; color: white;">Financial Report</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label style="color:white;" for="financialStartDate">Start Date:</label>
+                        <input type="date" id="financialStartDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label style="color:white;" for="financialEndDate">End Date:</label>
+                        <input type="date" id="financialEndDate" class="form-control" required>
+                    </div>
+                </div>
+                <button class="btn btn-warning btn-full" onclick="generateFinancialReport()">Generate Financial Report</button>
+                <div id="financialReportContent" style="margin-top: 20px;">
+                    </div>
+            </div>
+        </div>
+
+        <div id="staffModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Edit Staff</h2>
+                    <span class="close" onclick="closeModal('staffModal')">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="editStaffForm">
+                        <input type="hidden" id="editStaffId">
+                        <div class="form-group">
+                            <label for="editStaffName">Staff Name:</label>
+                            <input type="text" id="editStaffName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editStaffSalary">Daily Salary (Rs):</label>
+                            <input type="number" id="editStaffSalary" required min="1">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="leaveModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Edit Leave Request</h2>
+                    <span class="close" onclick="closeModal('leaveModal')">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="editLeaveForm">
+                        <input type="hidden" id="editLeaveId">
+                        <div class="form-group">
+                            <label for="editLeaveStaffName">Staff Name:</label>
+                            <input type="text" id="editLeaveStaffName" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="editLeaveReason">Reason:</label>
+                            <textarea id="editLeaveReason" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="editLeaveStatus">Status:</label>
+                            <select id="editLeaveStatus">
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div> <script>
+        // In-memory data store for demonstration
+        let staffData = JSON.parse(localStorage.getItem('staffData')) || [];
+        let leaveRequests = JSON.parse(localStorage.getItem('leaveRequests')) || [];
+        let attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || {};
+    
+        function saveData() {
+            localStorage.setItem('staffData', JSON.stringify(staffData));
+            localStorage.setItem('leaveRequests', JSON.stringify(leaveRequests));
+            localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+        }
+    
+        // Tab switching functionality
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+    
+            document.getElementById(tabId + '-tab').style.display = 'block';
+            document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active');
+            
+            // Reload content when switching tabs
+            if (tabId === 'dashboard') updateDashboard();
+            if (tabId === 'manage') displayStaffList();
+            if (tabId === 'leave') displayLeaveRequests();
+            if (tabId === 'summary') displayWeeklySummary();
+            if (tabId === 'reports') updateReportStaffSelections();
+        }
+    
+        // Manage Staff Tab
+        document.getElementById('addStaffForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const staffName = document.getElementById('staffNameInput').value;
+            const staffSalary = document.getElementById('staffSalaryInput').value;
+            const newStaff = { id: Date.now(), name: staffName, salary: parseInt(staffSalary) };
+            staffData.push(newStaff);
+            saveData();
+            displayStaffList();
+            updateStaffSelects();
+            this.reset();
+        });
+    
+        document.getElementById('searchInput').addEventListener('input', displayStaffList);
+    
+        function displayStaffList() {
+            const list = document.getElementById('staffList');
+            list.innerHTML = '';
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const filteredStaff = staffData.filter(staff => staff.name.toLowerCase().includes(searchText));
+    
+            if (filteredStaff.length === 0) {
+                list.innerHTML = '<p class="no-results">No staff members found.</p>';
+                return;
+            }
+    
+            filteredStaff.forEach(staff => {
+                const item = document.createElement('div');
+                item.className = 'staff-item';
+                item.innerHTML = `
+                    <div class="staff-item-header">
+                        <span class="staff-name">${staff.name}</span>
+                        <span class="staff-salary">Rs. ${staff.salary.toFixed(2)}</span>
+                    </div>
+                    <div class="staff-actions">
+                        <button class="btn btn-info" onclick="openEditStaffModal(${staff.id})">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteStaff(${staff.id})">Delete</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+    
+        function deleteStaff(id) {
+            if (confirm('Are you sure you want to delete this staff member?')) {
+                staffData = staffData.filter(s => s.id !== id);
+                saveData();
+                displayStaffList();
+                updateStaffSelects();
+                alert('Staff member deleted.');
+            }
+        }
+    
+        function openEditStaffModal(id) {
+            const staff = staffData.find(s => s.id === id);
+            if (staff) {
+                document.getElementById('editStaffId').value = staff.id;
+                document.getElementById('editStaffName').value = staff.name;
+                document.getElementById('editStaffSalary').value = staff.salary;
+                document.getElementById('staffModal').style.display = 'block';
+            }
+        }
+    
+        document.getElementById('editStaffForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('editStaffId').value);
+            const name = document.getElementById('editStaffName').value;
+            const salary = parseInt(document.getElementById('editStaffSalary').value);
+    
+            const staff = staffData.find(s => s.id === id);
+            if (staff) {
+                staff.name = name;
+                staff.salary = salary;
+                saveData();
+                displayStaffList();
+                updateStaffSelects();
+                closeModal('staffModal');
+            }
+        });
+    
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+    
+        // Attendance Tab
+        const attendanceLinks = document.querySelectorAll('#attendance-tab .option-link');
+        attendanceLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const group = this.parentElement;
+                group.querySelectorAll('.option-link').forEach(l => l.classList.remove('selected', 'present-selected', 'absent-selected', 'leave-selected', 'full-selected', 'half-selected'));
+                this.classList.add('selected');
+    
+                if (this.dataset.attendance) {
+                    const status = this.dataset.attendance;
+                    this.classList.add(`${status}-selected`);
+                    document.getElementById('dayTypeGroup').style.display = (status === 'present' || status === 'leave') ? 'grid' : 'none';
+                }
+    
+                if (this.dataset.daytype) {
+                    const dayType = this.dataset.daytype;
+                    this.classList.add(`${dayType}-selected`);
+                }
+                
+                checkAttendanceFormValidity();
+            });
+        });
+    
+        document.getElementById('attendanceForm').addEventListener('input', checkAttendanceFormValidity);
+    
+        function checkAttendanceFormValidity() {
+            const staffId = document.getElementById('staffSelect').value;
+            const date = document.getElementById('dateInput').value;
+            const attendanceStatus = document.querySelector('.attendance-options .option-link.selected')?.dataset.attendance;
+            const dayType = document.querySelector('#dayTypeGroup .option-link.selected')?.dataset.daytype;
+            const submitBtn = document.getElementById('submitBtn');
+            
+            let isFormValid = false;
+            if (staffId && date && attendanceStatus) {
+                if (attendanceStatus === 'present' || attendanceStatus === 'leave') {
+                    if (dayType) {
+                        isFormValid = true;
+                    }
+                } else {
+                    isFormValid = true;
+                }
+            }
+            submitBtn.disabled = !isFormValid;
+        }
+    
+        document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const staffId = document.getElementById('staffSelect').value;
+            const date = document.getElementById('dateInput').value;
+            
+            // Check for Sundays before proceeding
+            if (isWeekend(date)) {
+                alert('Today is Sunday, no attendance on Sunday.');
+                return;
+            }
+    
+            const attendanceStatus = document.querySelector('.attendance-options .option-link.selected').dataset.attendance;
+            const dayType = document.querySelector('#dayTypeGroup .option-link.selected')?.dataset.daytype || null;
+    
+            const staff = staffData.find(s => s.id == staffId);
+            const dailySalary = staff.salary;
+            let salaryEarned = 0;
+            if (attendanceStatus === 'present') {
+                salaryEarned = dayType === 'full' ? dailySalary : dailySalary / 2;
+            } else if (attendanceStatus === 'leave') {
+                salaryEarned = 0; // Or based on company policy
+            } else {
+                salaryEarned = 0;
+            }
+    
+            if (!attendanceData[staffId]) {
+                attendanceData[staffId] = {};
+            }
+            
+            attendanceData[staffId][date] = {
+                status: attendanceStatus,
+                dayType: dayType,
+                salary: salaryEarned
+            };
+    
+            saveData();
+            alert('Attendance marked successfully!');
+            updateDashboard();
+            this.reset();
+            attendanceLinks.forEach(l => l.classList.remove('selected', 'present-selected', 'absent-selected', 'leave-selected', 'full-selected', 'half-selected'));
+            document.getElementById('dayTypeGroup').style.display = 'none';
+        });
+    
+        // Leave Tab
+        document.getElementById('addLeaveForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const staffId = document.getElementById('leaveStaffSelect').value;
+            const startDate = document.getElementById('leaveStartDate').value;
+            const endDate = document.getElementById('leaveEndDate').value;
+            const reason = document.getElementById('leaveReason').value;
+    
+            const newLeave = {
+                id: Date.now(),
+                staffId: parseInt(staffId),
+                startDate,
+                endDate,
+                reason,
+                status: 'pending'
+            };
+            leaveRequests.push(newLeave);
+            saveData();
+            displayLeaveRequests();
+            alert('Leave request submitted successfully!');
+            this.reset();
+        });
+    
+        function displayLeaveRequests() {
+            const list = document.getElementById('leaveRequestList');
+            list.innerHTML = '';
+            const pendingRequests = leaveRequests.filter(req => req.status === 'pending');
+    
+            if (pendingRequests.length === 0) {
+                list.innerHTML = '<p class="no-results">No pending leave requests.</p>';
+                return;
+            }
+    
+            pendingRequests.forEach(req => {
+                const staff = staffData.find(s => s.id === req.staffId);
+                const item = document.createElement('div');
+                item.className = 'leave-item';
+                item.innerHTML = `
+                    <div class="leave-item-header">
+                        <h4>${staff ? staff.name : 'Unknown Staff'}</h4>
+                        <span class="leave-status status-pending">Pending</span>
+                    </div>
+                    <p><strong>Reason:</strong> ${req.reason}</p>
+                    <p><strong>Period:</strong> ${req.startDate} to ${req.endDate}</p>
+                    <div class="leave-actions">
+                        <button class="btn btn-success" onclick="approveLeave(${req.id})">Approve</button>
+                        <button class="btn btn-danger" onclick="rejectLeave(${req.id})">Reject</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+    
+        function approveLeave(id) {
+            const request = leaveRequests.find(req => req.id === id);
+            if (request) {
+                request.status = 'approved';
+                saveData();
+                displayLeaveRequests();
+                alert('Leave request approved.');
+            }
+        }
+    
+        function rejectLeave(id) {
+            const request = leaveRequests.find(req => req.id === id);
+            if (request) {
+                request.status = 'rejected';
+                saveData();
+                displayLeaveRequests();
+                alert('Leave request rejected.');
+            }
+        }
+    
+        // Dashboard Tab
+        function updateDashboard() {
+            const totalStaff = staffData.length;
+            document.getElementById('totalStaffCount').innerText = totalStaff;
+    
+            const today = new Date().toISOString().slice(0, 10);
+            let presentCount = 0;
+            let absentCount = 0;
+            let leaveCount = 0;
+    
+            staffData.forEach(staff => {
+                const attendance = attendanceData[staff.id] ? attendanceData[staff.id][today] : null;
+                if (attendance) {
+                    if (attendance.status === 'present') {
+                        presentCount++;
+                    } else if (attendance.status === 'absent') {
+                        absentCount++;
+                    } else if (attendance.status === 'leave') {
+                        leaveCount++;
+                    }
+                } else if (!isWeekend(today)) {
+                    // Only count as absent if no attendance is marked and it's not a weekend
+                    absentCount++;
+                }
+            });
+    
+            document.getElementById('presentTodayCount').innerText = presentCount;
+            document.getElementById('absentTodayCount').innerText = absentCount;
+            document.getElementById('leaveTodayCount').innerText = leaveCount;
+        }
+    
+        // Weekly Summary Tab
+        function displayWeeklySummary() {
+            const container = document.getElementById('weeklySummaryContent');
+            container.innerHTML = '';
+    
+            const today = new Date();
+            const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const summaryDates = [];
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date(today);
+                d.setDate(today.getDate() - i);
+                summaryDates.push(d.toISOString().slice(0, 10));
+            }
+    
+            staffData.forEach(staff => {
+                const staffCard = document.createElement('div');
+                staffCard.className = 'staff-card';
+                
+                const attendanceGrid = document.createElement('div');
+                attendanceGrid.className = 'attendance-grid';
+    
+                let totalSalary = 0;
+                
+                summaryDates.forEach(date => {
+                    const dayCard = document.createElement('div');
+                    dayCard.className = 'day-card';
+                    const day = new Date(date);
+                    dayCard.innerHTML = `<small>${daysOfWeek[day.getDay()]}</small><br><strong>${day.getDate()}</strong>`;
+    
+                    const dailyAttendance = attendanceData[staff.id] ? attendanceData[staff.id][date] : null;
+                    if (dailyAttendance) {
+                        const status = dailyAttendance.status;
+                        dayCard.classList.add(status);
+                        totalSalary += dailyAttendance.salary;
+                    } else if (isWeekend(date)) {
+                        dayCard.classList.add('weekend');
+                    } else {
+                        dayCard.classList.add('absent');
+                    }
+                    attendanceGrid.appendChild(dayCard);
+                });
+    
+                staffCard.innerHTML = `
+                    <div class="staff-card-name">
+                        ${staff.name}
+                        <span class="daily-salary">Rs. ${staff.salary.toFixed(2)}/day</span>
+                    </div>
+                    ${attendanceGrid.outerHTML}
+                    <div class="total-salary">
+                        Total Salary: Rs. ${totalSalary.toFixed(2)}
+                    </div>
+                `;
+                container.appendChild(staffCard);
+            });
+        }
+    
+        // Reports Tab
+        function updateReportStaffSelections() {
+            const singleSelect = document.getElementById('reportStaffSelect');
+            const multiSelect = document.getElementById('reportStaffMultiSelect');
+            
+            singleSelect.innerHTML = '<option value="all">All Staff</option>';
+            multiSelect.innerHTML = '';
+    
+            staffData.forEach(staff => {
+                const option = document.createElement('option');
+                option.value = staff.id;
+                option.innerText = staff.name;
+                singleSelect.appendChild(option);
+    
+                const card = document.createElement('div');
+                card.className = 'staff-selectable-card';
+                card.dataset.staffId = staff.id;
+                card.textContent = staff.name;
+                multiSelect.appendChild(card);
+            });
+            addMultiSelectListeners();
+        }
+    
+        function addMultiSelectListeners() {
+            const cards = document.querySelectorAll('.staff-selectable-card');
+            cards.forEach(card => {
+                card.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                });
+            });
+        }
+    
+        document.getElementById('multipleStaffLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelectorAll('.report-filters .option-link').forEach(l => l.classList.remove('selected'));
+            this.classList.add('selected');
+            document.getElementById('reportStaffMultiSelectGroup').style.display = 'block';
+            document.getElementById('reportStaffSelectGroup').style.display = 'none';
+        });
+    
+        document.getElementById('singleStaffLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelectorAll('.report-filters .option-link').forEach(l => l.classList.remove('selected'));
+            this.classList.add('selected');
+            document.getElementById('reportStaffMultiSelectGroup').style.display = 'none';
+            document.getElementById('reportStaffSelectGroup').style.display = 'block';
+        });
+
+        function getReportData() {
+            const reportType = document.querySelector('#reports-tab .option-link.selected')?.dataset.reportType;
+            const startDate = document.getElementById('reportStartDate').value;
+            const endDate = document.getElementById('reportEndDate').value;
+
+            if (!startDate || !endDate) {
+                alert('Please select a start and end date.');
+                return null;
+            }
+
+            const staffIds = [];
+            if (reportType === 'single') {
+                const selectedId = document.getElementById('reportStaffSelect').value;
+                if (selectedId === 'all') {
+                    staffData.forEach(staff => staffIds.push(staff.id));
+                } else {
+                    staffIds.push(parseInt(selectedId));
+                }
+            } else { // multiple
+                document.querySelectorAll('.staff-selectable-card.selected').forEach(card => {
+                    staffIds.push(parseInt(card.dataset.staffId));
+                });
+            }
+
+            if (staffIds.length === 0) {
+                alert('Please select at least one staff member.');
+                return null;
+            }
+
+            const reportData = [];
+            const dateRange = getDatesBetween(startDate, endDate);
+            let grandTotalSalary = 0;
+            
+            staffIds.forEach(staffId => {
+                const staff = staffData.find(s => s.id === staffId);
+                if (!staff) return;
+
+                let presentCount = 0;
+                let absentCount = 0;
+                let leaveCount = 0;
+                let totalSalary = 0;
+
+                dateRange.forEach(date => {
+                    const attendance = attendanceData[staffId] ? attendanceData[staffId][date] : null;
+                    if (attendance) {
+                        if (attendance.status === 'present') {
+                            presentCount += (attendance.dayType === 'full' ? 1 : 0.5);
+                            totalSalary += attendance.salary;
+                        } else if (attendance.status === 'leave') {
+                            leaveCount++;
+                            if (attendance.dayType === 'half') halfDayCount++;
+                        } else if (attendance.status === 'absent') {
+                            absentCount++;
+                        }
+                    } else if (!isWeekend(date)) {
+                        absentCount++;
+                    }
+                });
+
+                reportData.push({
+                    name: staff.name,
+                    salaryPerDay: staff.salary,
+                    presentDays: presentCount,
+                    absentDays: absentCount,
+                    leaveDays: leaveCount,
+                    totalSalary: totalSalary
+                });
+                grandTotalSalary += totalSalary;
+            });
+
+            return {
+                data: reportData,
+                startDate,
+                endDate,
+                grandTotalSalary
+            };
+        }
+
+        function generatePdfReport() {
+            const report = getReportData();
+            if (!report) return;
+
+            const doc = new window.jspdf.jsPDF();
+            
+            doc.setFontSize(18);
+            doc.text("Staff Attendance Report", 14, 20);
+            
+            doc.setFontSize(11);
+            doc.setTextColor(100);
+            doc.text(`Report Period: ${report.startDate} to ${report.endDate}`, 14, 28);
+            
+            const tableData = report.data.map(item => [
+                item.name,
+                `Rs. ${item.salaryPerDay.toFixed(2)}`,
+                item.presentDays,
+                item.absentDays,
+                item.leaveDays,
+                `Rs. ${item.totalSalary.toFixed(2)}`
+            ]);
+
+            doc.autoTable({
+                startY: 35,
+                head: [['Staff Name', 'Daily Salary', 'Present Days', 'Absent Days', 'Leave Days', 'Total Salary']],
+                body: tableData,
+                theme: 'striped',
+                headStyles: { fillColor: [79, 172, 254] },
+                alternateRowStyles: { fillColor: [240, 248, 255] }
+            });
+            
+            const finalY = doc.autoTable.previous.finalY;
+            doc.setFontSize(14);
+            doc.setTextColor(0);
+            doc.text(`Total Staff Salary Expenditure: Rs. ${report.grandTotalSalary.toFixed(2)}`, 14, finalY + 15);
+
+            doc.save('Staff_Attendance_Report.pdf');
+        }
+
+        function generateExcelReport() {
+            const report = getReportData();
+            if (!report) return;
+
+            const sheetData = [
+                ['Staff Attendance Report'],
+                [`Report Period: ${report.startDate} to ${report.endDate}`],
+                [],
+                ['Staff Name', 'Daily Salary', 'Present Days', 'Absent Days', 'Leave Days', 'Total Salary']
+            ];
+
+            report.data.forEach(item => {
+                sheetData.push([
+                    item.name,
+                    item.salaryPerDay,
+                    item.presentDays,
+                    item.absentDays,
+                    item.leaveDays,
+                    item.totalSalary
+                ]);
+            });
+            
+            sheetData.push([]);
+            sheetData.push(['Total Staff Salary Expenditure', '', '', '', '', report.grandTotalSalary]);
+
+            const ws = XLSX.utils.aoa_to_sheet(sheetData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Attendance Report");
+            XLSX.writeFile(wb, 'Staff_Attendance_Report.xlsx');
+        }
+
+        function getDatesBetween(startDateStr, endDateStr) {
+            const dates = [];
+            const currentDate = new Date(startDateStr);
+            const endDate = new Date(endDateStr);
+
+            while (currentDate <= endDate) {
+                dates.push(currentDate.toISOString().slice(0, 10));
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            return dates;
+        }
+
+        function isWeekend(dateStr) {
+            const date = new Date(dateStr);
+            return date.getDay() === 0; // Sunday is day 0 in JavaScript
+        }
+
+        function generateFinancialReport() {
+            const financialStartDate = document.getElementById('financialStartDate').value;
+            const financialEndDate = document.getElementById('financialEndDate').value;
+
+            if (!financialStartDate || !financialEndDate) {
+                alert('Please select a start and end date for the financial report.');
+                return;
+            }
+
+            let totalExpenditure = 0;
+            const dates = getDatesBetween(financialStartDate, financialEndDate);
+            
+            staffData.forEach(staff => {
+                if (attendanceData[staff.id]) {
+                    dates.forEach(date => {
+                        // Exclude Sundays from financial calculation
+                        if (attendanceData[staff.id][date] && !isWeekend(date)) {
+                            totalExpenditure += attendanceData[staff.id][date].salary;
+                        }
+                    });
+                }
+            });
+
+            const content = document.getElementById('financialReportContent');
+            content.innerHTML = `
+                <div class="financial-summary" style="background:none;">
+                    <h3>Financial Overview</h3>
+                    <div class="financial-grid">
+                        <div class="financial-card">
+                            <h4>Total Staff Salary Expenditure</h4>
+                            <div class="amount">Rs. ${totalExpenditure.toFixed(2)}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    
+        // Initial setup on page load
+        window.onload = function() {
+            updateStaffSelects();
+            updateDashboard();
+            switchTab('dashboard');
+        };
+    
+        function updateStaffSelects() {
+            const selects = [
+                document.getElementById('staffSelect'),
+                document.getElementById('leaveStaffSelect'),
+            ];
+            
+            selects.forEach(select => {
+                select.innerHTML = '<option value="">Choose Staff Member</option>';
+                staffData.forEach(staff => {
+                    const option = document.createElement('option');
+                    option.value = staff.id;
+                    option.innerText = staff.name;
+                    select.appendChild(option);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
